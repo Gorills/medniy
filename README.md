@@ -64,28 +64,9 @@ make migrate
 docker compose exec app php artisan storage:link
 ```
 
-Сайт: `http://localhost:8080` (`HTTP_PORT` в `.env`).
+Сайт: `https://medniy.moscow` (`HTTP_PORT` в `.env`).
 
 > `--force-recreate` после `key:generate` обязателен: иначе контейнер использует старый пустой `APP_KEY`.
-
-Подробная методика контейнеризации: [LEGACY_DOCKER_HANDOFF.md](LEGACY_DOCKER_HANDOFF.md).
-
-## Создание медиа-архива (для передачи)
-
-На машине, где есть все файлы:
-
-```bash
-make media-pack                    # → medniy-media.tar.gz в корне проекта
-make media-pack OUT=custom.tar.gz  # произвольное имя
-```
-
-Для дампа БД с работающего проекта:
-
-```bash
-make backup                   # → backups/db_YYYYMMDD_HHMMSS.sql.gz + media backup
-```
-
-Или только БД для первичного развёртывания — скопировать нужный дамп в `docker/db/init/01_medniy_seed.sql.gz`.
 
 ## Make-команды
 
@@ -128,7 +109,7 @@ make backup                   # → backups/db_YYYYMMDD_HHMMSS.sql.gz + media ba
 
 ## Кэш после смены данных
 
-Модели с **Rememberable** кешируют выборки. Если контент «застыл»:
+Модели с **Rememberable** кешируют выборки. Очистка:
 `docker compose exec app php artisan cache:clear`.
 
 ## Периодические задачи

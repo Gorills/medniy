@@ -82,7 +82,7 @@
         </div>
     </div>
 </div>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD98ai0Ml4grGL4GpkDyU8SeAqwNF9545I"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ urlencode(config('services.google_maps.key')) }}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function()
     {
