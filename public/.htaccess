@@ -1,0 +1,35 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+
+    ############################################################################
+    #### Добавляем слеш(/), если его нет, и это не файл.                    ####
+    ############################################################################
+    RewriteCond %{REQUEST_URI} !(.*)/$
+       # Если слеша в конце нет.
+    RewriteCond %{REQUEST_FILENAME} !-f
+       # Не является файлом.
+    RewriteCond %{REQUEST_URI} !\..+$
+       # В URL нет точки (файл).
+    RewriteCond %{REQUEST_URI} ^(.+)$
+     # В URL есть хоть один символы
+    RewriteRule ^(.*)$ $1/ [L,R=301]
+       # Добавляем слеш в конце.
+</IfModule>

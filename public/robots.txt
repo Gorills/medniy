@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /login
+Disallow: /?
+Disallow: /password
+Disallow: /?*filter=
+Disallow: /*?*creditSum=
+Sitemap: https://medniy.moscow/sitemap.xml

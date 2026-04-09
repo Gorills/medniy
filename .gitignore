@@ -1,0 +1,36 @@
+node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+/.idea
+/.vscode
+/.vagrant
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+.env
+
+backups/
+
+# Локальная копия дампа (данные перенесены в docker/db/init и storage/app/public)
+medniy_dump/
+
+_ide_helper.php
+
+/www
+/public_html
+.htpassword
+
+# === Тяжёлые медиа (хранятся вне репо, передаются через medniy-media.tar.gz) ===
+/public/img/
+/public/assets/
+/public/pdf/
+/storage/app/public/
+
+# Архив медиа (генерируется make media-pack)
+medniy-media.tar.gz
+.cursorignore
+.cursor
+docs

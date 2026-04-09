@@ -1,0 +1,29 @@
+include:
+  - project: 'dalee/git-autodeploy'
+    ref: gitlab-ci
+    file: '/autodeploy.gitlab-ci.yml'
+
+variables:
+  AUTODEPLOY_BASE_DOMAIN: medniy.capitalgroup.3.dev.dalee.ru
+
+.cap_deploy:
+  stage: deploy
+  image: dalee/ansistrano.docker
+  tags:
+    - docker_dalee
+  before_script:
+    - eval $(ssh-agent -s)
+    - chmod 600 $SSH_PRIVATE_DEPLOY_KEY
+    - ssh-add $SSH_PRIVATE_DEPLOY_KEY
+  script:
+    - cd ./.deploy
+    - ansible-playbook -i inventories/${CI_ENVIRONMENT_NAME}.ini deploy.yml
+
+deploy:production:
+  extends: .cap_deploy
+  environment:
+    name: production
+    url: https://medniy.moscow
+  only:
+    - master
+  when: manual
