@@ -68,6 +68,40 @@ docker compose exec app php artisan storage:link
 
 > `--force-recreate` после `key:generate` обязателен: иначе контейнер использует старый пустой `APP_KEY`.
 
+### Если в браузере пустая страница или HTTP 500 на `http://localhost:8080/`
+
+Чаще всего это **Redis**: в логах `storage/logs/laravel-*.log` будет `NOAUTH Authentication required`. Контейнер Redis всегда требует пароль (`--requirepass`), а Laravel берёт его из **`REDIS_PASSWORD` в `.env`**. Если переменной нет или она не совпадает с тем, с чем запущен Redis, кэш/сессии падают с 500.
+
+Не задавайте `REDIS_PASSWORD=null`: в Laravel/phpdotenv это читается как «пароля нет», тогда как Redis всё равно ждёт `AUTH` — получится рассинхрон с контейнером `cache`. Используйте обычную строку (как в `.env.example`, `CHANGE_ME` или свой секрет).
+
+Проверьте, что в `.env` задана одна и та же строка `REDIS_PASSWORD=...` (как в `.env.example`), затем перезапустите Redis и приложение:
+
+```bash
+docker compose up -d --force-recreate cache app cron
+```
+
+Если меняли пароль при уже существующем томе Redis — того же эффекта можно добиться только согласованием `.env` и перезапуском `cache`.
+
+### Если `make migrate` — `Access denied for user 'medniy'`
+
+Пароль в `.env` (`DB_PASSWORD`) не совпадает с паролем пользователя MySQL в томе `db_data`. MySQL создаёт пользователя `medniy` **один раз** при первом создании данных; смена `DB_PASSWORD` в `.env` после этого сама по себе БД не обновляет.
+
+**Вариант 1 — согласовать пароль в MySQL с текущим `.env` (данные сохраняются):**
+
+```bash
+docker compose exec db mysql -uroot -p
+```
+
+Введите `MYSQL_ROOT_PASSWORD` из `.env`, затем в консоли MySQL (подставьте тот же пароль, что в `DB_PASSWORD`):
+
+```sql
+ALTER USER 'medniy'@'%' IDENTIFIED BY 'ВАШ_DB_PASSWORD_ИЗ_ENV';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+**Вариант 2 — пересоздать том БД с нуля** (все данные MySQL удалятся; дамп из `docker/db/init/` импортируется снова при пустом томе): см. [docker/db/init/README.md](docker/db/init/README.md) (`docker volume rm medniy_db_data` и т.д.). Перед этим убедитесь, что в `.env` уже стоят окончательные `DB_PASSWORD` и `MYSQL_ROOT_PASSWORD`.
+
 ## Make-команды
 
 | Команда | Описание |

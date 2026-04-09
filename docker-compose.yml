@@ -78,7 +78,7 @@ services:
     command: >
       redis-server
       --appendonly yes
-      --requirepass ${REDIS_PASSWORD:-changeme}
+      --requirepass ${REDIS_PASSWORD:?Задайте REDIS_PASSWORD в .env (должен совпадать с Laravel)}
     volumes:
       - cache_data:/data
     networks:
