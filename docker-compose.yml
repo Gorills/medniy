@@ -34,7 +34,9 @@ services:
     ports:
       - "${HTTP_PORT:-8080}:80"
     volumes:
+      # public/storage — симлинк на storage/app/public; без этого тома nginx не видит цель ссылки и /storage/* даёт 404
       - ./public:/var/www/html/public:ro
+      - ./storage:/var/www/html/storage:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app

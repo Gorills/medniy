@@ -12,6 +12,8 @@
 
 **Медиа и дамп БД не хранятся в репозитории.** Их передаёт ответственный разработчик (архив + файл дампа) любым удобным способом: по сети, через файлообменник, на флешке.
 
+**Полный пакет данных для новой машины:** репозиторий + `medniy-media.tar.gz` + `01_medniy_seed.sql.gz` в `docker/db/init/`, затем шаги раздела «Быстрый старт (Docker)» ниже (включая `make media-unpack`, `storage:link` и перезапуск `web`). Без распаковки медиа каталоги из `.gitignore` (`public/img`, `storage/app/public` и т.д.) останутся пустыми.
+
 ### Требования
 
 - Docker ≥ 20.10, Docker Compose v2, GNU **make**
@@ -34,10 +36,10 @@ cp /path/to/01_medniy_seed.sql.gz docker/db/init/
 
 MySQL автоматически импортирует его при первом создании тома `db_data`.
 
-### 3. Распаковать медиа
+### 3. Распаковать медиа (из корня репозитория)
 
 ```bash
-make media-unpack FILE=/path/to/medniy-media.tar.gz
+make media-unpack FILE=medniy-media.tar.gz
 ```
 
 Архив распакует:
@@ -62,9 +64,12 @@ make key
 docker compose up -d --force-recreate app cron
 make migrate
 docker compose exec app php artisan storage:link
+docker compose up -d web
 ```
 
 Сайт: `https://medniy.moscow` (`HTTP_PORT` в `.env`).
+
+Контейнер `web` (nginx) монтирует и `public`, и `storage`, чтобы симлинк `public/storage` → `storage/app/public` разрешался внутри nginx. Иначе запросы к `/storage/files/*.pdf` и другим загрузкам давали бы 404, хотя файлы лежат в `storage/app/public/`.
 
 > `--force-recreate` после `key:generate` обязателен: иначе контейнер использует старый пустой `APP_KEY`.
 
